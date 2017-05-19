@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        GridView categoryView = (GridView) findViewById(R.id.categories);
+        GridView categoryView = (GridView) findViewById(R.id.category_grid);
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categoryDAO.getCategories());
         categoryView.setAdapter(categoryAdapter);
     }

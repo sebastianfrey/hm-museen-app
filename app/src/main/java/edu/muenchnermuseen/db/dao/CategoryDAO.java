@@ -50,18 +50,14 @@ public class CategoryDAO {
     List<Category> categories = new ArrayList<>();
 
     try {
-      this.db.openDataBase();
       Cursor cursor = db.query(CATEGORIES_TABLE, CATEGORIES_COLUMNS);
 
       while (cursor.moveToNext()) {
         categories.add(rowToCategory(cursor));
       }
-    } catch (DbException e) {
+    } catch (Exception e) {
       categories = new ArrayList<>();
       Log.e("CategoryDAO", e.getMessage(), e);
-    }
-    finally {
-      this.db.close();
     }
 
     return categories;

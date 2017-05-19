@@ -178,7 +178,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             throw new DbException("table and/or columns is missing.");
         }
 
-        return db.query(table, columns, where, whereArgs, null, null, null);
+        this.openDataBase();
+
+        if (this.db == null)
+        {
+            throw new DbException("Could not open db.");
+        }
+
+        Cursor cursor = db.query(table, columns, where, whereArgs, null, null, null);
+
+        return cursor;
     }
 
 }
