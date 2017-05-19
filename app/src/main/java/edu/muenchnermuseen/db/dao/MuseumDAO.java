@@ -16,7 +16,7 @@ import edu.muenchnermuseen.db.entities.Museum;
 
 public class MuseumDAO {
 
-    private static String MUSEUMS_TABLE = "museen";
+    private static String MUSEUMS_TABLE = "MUSEUM_REGISTRY";
 
     private final static String ID_COLUMN = "ID";
     private final static String NAME_COLUMN = "NAME";
@@ -36,7 +36,7 @@ public class MuseumDAO {
 
     private DataBaseHelper db;
 
-    private MuseumDAO(DataBaseHelper db) {
+    public MuseumDAO(DataBaseHelper db) {
         this.db = db;
     }
 

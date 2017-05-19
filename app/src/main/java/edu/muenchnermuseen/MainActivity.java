@@ -13,9 +13,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.GridView;
+
+import edu.muenchnermuseen.adapter.CategoryAdapter;
+import edu.muenchnermuseen.db.DataBaseHelper;
+import edu.muenchnermuseen.db.dao.CategoryDAO;
+import edu.muenchnermuseen.db.dao.MuseumDAO;
+import edu.muenchnermuseen.db.entities.Category;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    DataBaseHelper db;
+
+    CategoryDAO categoryDAO;
+    MuseumDAO museumDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +35,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        db = new DataBaseHelper(this);
+        categoryDAO = new CategoryDAO(db);
+        museumDAO = new MuseumDAO(db);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -41,6 +57,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        GridView categoryView = (GridView) findViewById(R.id.categories);
+        CategoryAdapter categoryAdapter = new CategoryAdapter(this, categoryDAO.getCategories());
+        categoryView.setAdapter(categoryAdapter);
     }
 
     @Override

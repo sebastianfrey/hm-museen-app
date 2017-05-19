@@ -6,6 +6,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/edu.muenchnermuseen/databases/";
 
-    private static String DB_NAME = "muenchner_museen.sqlite";
+    private static String DB_NAME = "data.sqlite";
 
     private SQLiteDatabase db;
 
@@ -36,6 +37,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         super(context, DB_NAME, null, 1);
         this.myContext = context;
+        try {
+            createDataBase();
+        }
+        catch (Exception e)
+        {
+
+        }
     }
 
     /**
@@ -46,7 +54,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         boolean dbExist = checkDataBase();
 
         if(dbExist){
-            //do nothing - database already exist
+
         }else{
 
             //By calling this method and empty database will be created into the default system path
@@ -81,7 +89,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }catch(SQLiteException e){
 
             //database does't exist yet.
-
+            Log.e("DataBaseHelper", e.getMessage(), e);
         }
 
         if(checkDB != null){
