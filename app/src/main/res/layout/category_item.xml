@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="2dp"
-    android:background="@drawable/category_shadow">
-
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:elevation="3dp">
     <ImageView
         android:id="@+id/imageview_category_thumb"
         android:layout_width="match_parent"
-        android:layout_height="145dp"
+        android:layout_height="140dp"
+        android:padding="10dp"
         android:scaleType="fitCenter" />
 
     <TextView
@@ -19,8 +20,5 @@
         android:textSize="20sp"
         tools:text="Text"
         android:textStyle="bold"
-        android:paddingTop="4dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
         android:gravity="center_horizontal"/>
 </LinearLayout>
