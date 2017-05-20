@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import edu.muenchnermuseen.adapter.CategoryAdapter;
@@ -22,7 +23,7 @@ import edu.muenchnermuseen.db.dao.MuseumDAO;
 import edu.muenchnermuseen.db.entities.Category;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
 
     DataBaseHelper db;
 
@@ -40,15 +41,6 @@ public class MainActivity extends AppCompatActivity
         categoryDAO = new CategoryDAO(db);
         museumDAO = new MuseumDAO(db);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -61,6 +53,14 @@ public class MainActivity extends AppCompatActivity
         GridView categoryView = (GridView) findViewById(R.id.category_grid);
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categoryDAO.getCategories());
         categoryView.setAdapter(categoryAdapter);
+
+        categoryView.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
+}
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
