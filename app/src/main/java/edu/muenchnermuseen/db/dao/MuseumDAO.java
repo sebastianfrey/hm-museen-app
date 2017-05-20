@@ -7,8 +7,7 @@ import java.util.List;
 
 import edu.muenchnermuseen.db.DataBaseHelper;
 import edu.muenchnermuseen.db.DbException;
-import edu.muenchnermuseen.db.entities.Category;
-import edu.muenchnermuseen.db.entities.Museum;
+import edu.muenchnermuseen.entities.Museum;
 
 /**
  * Created by sfrey on 05.05.2017.
@@ -40,7 +39,7 @@ public class MuseumDAO {
         this.db = db;
     }
 
-    public List<Museum> getMuseums() throws DbException
+    public List<Museum> getMuseums()
     {
         CategoryDAO categoryDAO = new CategoryDAO(this.db);
 
@@ -63,7 +62,7 @@ public class MuseumDAO {
     }
 
 
-    public List<Museum> getMuseums(String name) throws DbException
+    public List<Museum> getMuseums(String name)
     {
         CategoryDAO categoryDAO = new CategoryDAO(this.db);
 
@@ -79,7 +78,7 @@ public class MuseumDAO {
                 museums.add(rowToCategory(cursor, categoryDAO));
             }
         }
-        catch (DbException e)
+        catch (Exception e)
         {
             museums = new ArrayList<>();
         }
@@ -88,28 +87,63 @@ public class MuseumDAO {
     }
 
 
-    private Cursor getMuseumById(Integer id) throws DbException
+    public List<Museum> getMuseumById(Integer id) throws DbException
     {
+        CategoryDAO categoryDAO = new CategoryDAO(this.db);
+
+        List<Museum> museums = new ArrayList();
+
         if (id == null)
         {
             throw new DbException("Can not query museum with id = null");
         }
 
-        String[] searchArgs = new String[] { id.toString() };
+        try {
+            String[] searchArgs = new String[] { id.toString() };
 
-        return db.query(MUSEUMS_TABLE, MUSEUMS_COLUMNS, "ID = ?", searchArgs);
-    }
+            Cursor cursor = db.query(MUSEUMS_TABLE, MUSEUMS_COLUMNS, "ID LIKE ?", searchArgs);
 
-    private Cursor getMuseumsByCategory(Integer category) throws DbException
-    {
-        if (category == null)
+            while (cursor.moveToNext())
+            {
+                museums.add(rowToCategory(cursor, categoryDAO));
+            }
+        }
+        catch (DbException e)
         {
-            throw new DbException("Can not query museums by category with category == null");
+            museums = new ArrayList<>();
         }
 
-        String[] searchArgs = new String[] { category.toString() };
+        return museums;
+    }
 
-        return db.query(MUSEUMS_TABLE, MUSEUMS_COLUMNS, "CATEGORY = ?", searchArgs);
+    public List<Museum> getMuseumsByCategory(Integer category)
+    {
+        CategoryDAO categoryDAO = new CategoryDAO(this.db);
+
+        List<Museum> museums = new ArrayList();
+
+        if (category == null)
+        {
+            return museums;
+        }
+
+        try {
+            String[] searchArgs = new String[] { category.toString() };
+
+            Cursor cursor = db.query(MUSEUMS_TABLE, MUSEUMS_COLUMNS, "CATEGORY LIKE ?", searchArgs);
+
+            while (cursor.moveToNext())
+            {
+                museums.add(rowToCategory(cursor, categoryDAO));
+            }
+        }
+        catch (DbException e)
+        {
+            museums = new ArrayList<>();
+        }
+
+
+        return museums;
     }
 
 

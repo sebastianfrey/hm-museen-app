@@ -14,7 +14,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.muenchnermuseen.R;
-import edu.muenchnermuseen.db.entities.Category;
+import edu.muenchnermuseen.entities.Category;
 
 public class CategoryAdapter extends BaseAdapter {
 
@@ -36,13 +36,13 @@ public class CategoryAdapter extends BaseAdapter {
   // 3
   @Override
   public long getItemId(int position) {
-    return 0;
+    return categories.get(position).getId();
   }
 
   // 4
   @Override
   public Object getItem(int position) {
-    return null;
+    return categories.get(position);
   }
 
   // 5
@@ -54,7 +54,7 @@ public class CategoryAdapter extends BaseAdapter {
     // 2
     if (convertView == null) {
       final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-      convertView = layoutInflater.inflate(R.layout.category_item, null);
+      convertView = layoutInflater.inflate(R.layout.grid_item_category, null);
     }
 
     final ImageView imageView = (ImageView) convertView.findViewById(R.id.imageview_category_thumb);

@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.muenchnermuseen.db.DataBaseHelper;
-import edu.muenchnermuseen.db.DbException;
-import edu.muenchnermuseen.db.entities.Category;
-import edu.muenchnermuseen.db.entities.Museum;
+import edu.muenchnermuseen.entities.Category;
 
 /**
  * Created by sfrey on 05.05.2017.

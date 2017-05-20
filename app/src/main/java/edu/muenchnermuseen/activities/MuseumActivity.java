@@ -1,6 +1,5 @@
-package edu.muenchnermuseen;
+package edu.muenchnermuseen.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,27 +12,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.GridView;
+import android.widget.ListView;
 
-import edu.muenchnermuseen.adapter.CategoryAdapter;
+import java.util.Collections;
+import java.util.List;
+
+import edu.muenchnermuseen.R;
+import edu.muenchnermuseen.adapter.MuseumAdapter;
 import edu.muenchnermuseen.db.DataBaseHelper;
 import edu.muenchnermuseen.db.dao.CategoryDAO;
 import edu.muenchnermuseen.db.dao.MuseumDAO;
-import edu.muenchnermuseen.db.entities.Category;
+import edu.muenchnermuseen.entities.Category;
+import edu.muenchnermuseen.entities.Museum;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
+public class MuseumActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     DataBaseHelper db;
 
     CategoryDAO categoryDAO;
     MuseumDAO museumDAO;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_museum);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -50,17 +54,27 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        GridView categoryView = (GridView) findViewById(R.id.category_grid);
-        CategoryAdapter categoryAdapter = new CategoryAdapter(this, categoryDAO.getCategories());
-        categoryView.setAdapter(categoryAdapter);
 
-        categoryView.setOnItemClickListener(this);
-    }
+        Bundle b = getIntent().getExtras();
+        Category category = null;
+        if(b != null) {
+           category = (Category) b.getSerializable("category");
+        }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
+        List<Museum> museums = Collections.emptyList();
+
+        if (category != null)
+        {
+            museums = museumDAO.getMuseumsByCategory(category.getId());
+        }
+        else
+        {
+            museums = museumDAO.getMuseums();
+        }
+
+        ListView museumView = (ListView) findViewById(R.id.museum_list);
+        MuseumAdapter museumAdapter = new MuseumAdapter(this, museums);
+        museumView.setAdapter(museumAdapter);
     }
 
     @Override
@@ -76,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.museum, menu);
         return true;
     }
 
@@ -88,12 +102,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-}
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -102,8 +116,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Intent intent = new Intent(this, MapsActivity.class);
-            startActivity(intent);
+            // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

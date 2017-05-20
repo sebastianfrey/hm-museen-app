@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/imageview_category_thumb"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="132dp"
         android:padding="10dp"
         android:scaleType="fitCenter" />
 
@@ -17,6 +17,7 @@
         android:id="@+id/textview_category_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="5dp"
         android:textSize="20sp"
         tools:text="Text"
         android:textStyle="bold"
