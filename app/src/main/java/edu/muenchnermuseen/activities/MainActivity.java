@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -77,9 +76,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        CategoryAdapter adapter = (CategoryAdapter) parent.getAdapter();
+        Category category = (Category) adapter.getItem(position);
+
         Intent intent = new Intent(this, MuseumActivity.class);
         Bundle b = new Bundle();
-        b.putSerializable("category", categoryDAO.getCategory(position));
+        b.putSerializable("category", category);
         intent.putExtras(b);
         startActivity(intent);
     }
