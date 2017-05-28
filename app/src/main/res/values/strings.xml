@@ -9,4 +9,7 @@
     <string name="action_search">Suche</string>
     <string name="title_activity_maps">Münchner Museen</string>
     <string name="title_activity_museum">Münchner Museen</string>
+    <string name="title_activity_detail">DetailActivity</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
