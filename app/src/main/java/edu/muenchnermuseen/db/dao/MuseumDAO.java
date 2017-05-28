@@ -1,6 +1,7 @@
 package edu.muenchnermuseen.db.dao;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +16,14 @@ import edu.muenchnermuseen.entities.Museum;
 
 public class MuseumDAO {
 
-    private static String MUSEUMS_TABLE = "MUSEUM_REGISTRY";
+    public static String MUSEUMS_TABLE = "MUSEUM_REGISTRY";
 
-    private final static String ID_COLUMN = "ID";
-    private final static String NAME_COLUMN = "NAME";
-    private final static String DESCRIPTION_COLUMN = "DESCRIPTION";
-    private final static String LAT_COLUMN = "LAT";
-    private final static String LON_COLUMN = "LON";
-    private final static String CATEGORY_COLUMN = "CATEGORY";
+    public final static String ID_COLUMN = "ID";
+    public final static String NAME_COLUMN = "NAME";
+    public final static String DESCRIPTION_COLUMN = "DESCRIPTION";
+    public final static String LAT_COLUMN = "LAT";
+    public final static String LON_COLUMN = "LON";
+    public final static String CATEGORY_COLUMN = "CATEGORY";
 
     private static String[] MUSEUMS_COLUMNS = new String[] {
             ID_COLUMN,
@@ -62,14 +63,14 @@ public class MuseumDAO {
     }
 
 
-    public List<Museum> getMuseums(String name)
+    public List<Museum> getMuseumsLike(String name)
     {
         CategoryDAO categoryDAO = new CategoryDAO(this.db);
 
         List<Museum> museums = new ArrayList<>();
 
         try {
-            String[] searchArgs = new String[] { name };
+            String[] searchArgs = new String[] { "%" + name + "%" };
 
             Cursor cursor = db.query(MUSEUMS_TABLE, MUSEUMS_COLUMNS, "NAME LIKE ?", searchArgs);
 
@@ -87,16 +88,11 @@ public class MuseumDAO {
     }
 
 
-    public List<Museum> getMuseumById(Integer id) throws DbException
+    public Museum getMuseumById(Integer id)
     {
         CategoryDAO categoryDAO = new CategoryDAO(this.db);
 
-        List<Museum> museums = new ArrayList();
-
-        if (id == null)
-        {
-            throw new DbException("Can not query museum with id = null");
-        }
+        Museum museum = new Museum();
 
         try {
             String[] searchArgs = new String[] { id.toString() };
@@ -105,15 +101,15 @@ public class MuseumDAO {
 
             while (cursor.moveToNext())
             {
-                museums.add(rowToCategory(cursor, categoryDAO));
+                museum = rowToCategory(cursor, categoryDAO);
             }
         }
         catch (DbException e)
         {
-            museums = new ArrayList<>();
+            Log.e("MuseumDAO", e.getMessage(), e);
         }
 
-        return museums;
+        return museum;
     }
 
     public List<Museum> getMuseumsByCategory(Integer category)

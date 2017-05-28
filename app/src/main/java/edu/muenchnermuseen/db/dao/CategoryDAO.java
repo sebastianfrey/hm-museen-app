@@ -15,10 +15,10 @@ import edu.muenchnermuseen.entities.Category;
 
 public class CategoryDAO {
 
-  private static String CATEGORIES_TABLE = "CATEGORY_REGISTRY";
+  public static String CATEGORIES_TABLE = "CATEGORY_REGISTRY";
 
-  private final static String ID_COLUMN = "ID";
-  private final static String NAME_COLUMN = "NAME";
+  public final static String ID_COLUMN = "ID";
+  public final static String NAME_COLUMN = "NAME";
 
   private static String[] CATEGORIES_COLUMNS = new String[]{
       ID_COLUMN,

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -78,6 +79,7 @@ public class DetailActivity extends AppCompatActivity
     }
   }
 
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
@@ -109,6 +111,7 @@ public class DetailActivity extends AppCompatActivity
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_search) {
+      onSearchRequested();
       return true;
     }
 

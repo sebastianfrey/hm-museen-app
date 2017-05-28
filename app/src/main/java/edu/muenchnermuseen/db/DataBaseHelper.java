@@ -54,7 +54,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         boolean dbExist = checkDataBase();
 
         if(dbExist){
-
+            copyDataBase();
         }else{
 
             //By calling this method and empty database will be created into the default system path
@@ -188,6 +188,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(table, columns, where, whereArgs, null, null, null);
 
         return cursor;
+    }
+
+
+    public SQLiteDatabase getInstance() {
+        this.openDataBase();
+        return this.db;
     }
 
 }
