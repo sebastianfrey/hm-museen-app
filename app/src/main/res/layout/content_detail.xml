@@ -1,12 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.muenchnermuseen.activities.DetailActivity"
-    tools:showIn="@layout/app_bar_detail">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              app:layout_behavior="@string/appbar_scrolling_view_behavior"
+              tools:context="edu.muenchnermuseen.activities.DetailActivity"
+              tools:showIn="@layout/app_bar_detail">
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="3dp">
+        <ImageView
+            android:id="@+id/detail_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:src="@mipmap/ic_img_not_found"/>
+        <Button
+            android:id="@+id/goto_btn"
+            android:text="@string/label_goto"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/detail_thumb"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="@dimen/inner_spacing"
+            android:layout_marginBottom="@dimen/inner_spacing"></Button>
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_margin="@dimen/outer_spacing"
+        android:background="@android:color/white"
+        android:elevation="3dp">
+        <TextView
+            android:id="@+id/detail_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/header_text"
+            android:textStyle="bold"
+            android:padding="@dimen/inner_spacing"></TextView>
+        <TextView
+            android:id="@+id/detail_description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/inner_spacing"></TextView>
+    </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
