@@ -25,17 +25,18 @@
             android:id="@+id/museum_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="16sp"
-            android:paddingLeft="10dp"
-            tools:text="Text"
+            android:textSize="@dimen/header_text"
+            android:paddingLeft="@dimen/inner_spacing"
+            tools:text="Header"
             android:textStyle="bold"
             android:gravity="center_vertical|left" />
     </LinearLayout>
     <TextView
         android:id="@+id/museum_description"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/inner_spacing"
         android:ellipsize="end"
         android:maxLines="3"
+        tools:text="Description"
         android:layout_width="match_parent"
         android:layout_height="65dp"></TextView>
 

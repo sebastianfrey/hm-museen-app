@@ -9,8 +9,8 @@
     <ImageView
         android:id="@+id/imageview_category_thumb"
         android:layout_width="match_parent"
-        android:layout_height="132dp"
-        android:padding="10dp"
+        android:layout_height="135dp"
+        android:padding="@dimen/inner_spacing"
         android:scaleType="fitCenter" />
 
     <TextView
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:textSize="20sp"
+        android:textSize="@dimen/header_text"
         tools:text="Text"
         android:textStyle="bold"
         android:gravity="center_horizontal"/>

@@ -11,14 +11,14 @@
     
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="220dp"
         android:background="@android:color/white"
         android:elevation="3dp">
 
         <ImageView
             android:id="@+id/image_slide"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -52,10 +52,10 @@
         android:layout_height="match_parent"
         android:numColumns="2"
         android:scrollbarStyle="outsideOverlay"
-        android:padding="20dp"
+        android:padding="@dimen/outer_spacing"
         android:clipToPadding="false"
-        android:verticalSpacing="20dp"
-        android:horizontalSpacing="20dp"
+        android:verticalSpacing="@dimen/outer_spacing"
+        android:horizontalSpacing="@dimen/outer_spacing"
         android:id="@+id/category_grid">
 
     </GridView>

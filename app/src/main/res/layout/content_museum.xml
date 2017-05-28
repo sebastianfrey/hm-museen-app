@@ -6,16 +6,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/app_bar_main">
-    tools:context="edu.muenchnermuseen.activities.MuseumActivity">
+    tools:context="edu.muenchnermuseen.activities.MuseumActivity"
+    tools:showIn="@layout/app_bar_museum">
 
     <ListView
         android:id="@+id/museum_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@android:color/transparent"
-        android:dividerHeight="10dp"
-        android:padding="15dp"
+        android:dividerHeight="@dimen/outer_spacing"
+        android:padding="@dimen/outer_spacing"
         android:clipToPadding="false">
 
     </ListView>
