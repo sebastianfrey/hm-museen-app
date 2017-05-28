@@ -1,8 +1,12 @@
 package edu.muenchnermuseen.activities;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.Collections;
@@ -26,7 +31,7 @@ import edu.muenchnermuseen.entities.Category;
 import edu.muenchnermuseen.entities.Museum;
 
 public class MuseumActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
 
     DataBaseHelper db;
 
@@ -61,7 +66,7 @@ public class MuseumActivity extends AppCompatActivity
            category = (Category) b.getSerializable("category");
         }
 
-        List<Museum> museums = Collections.emptyList();
+        List<Museum> museums = null;
 
         if (category != null)
         {
@@ -75,6 +80,7 @@ public class MuseumActivity extends AppCompatActivity
         ListView museumView = (ListView) findViewById(R.id.museum_list);
         MuseumAdapter museumAdapter = new MuseumAdapter(this, museums);
         museumView.setAdapter(museumAdapter);
+        museumView.setOnItemClickListener(this);
     }
 
     @Override
@@ -91,7 +97,28 @@ public class MuseumActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.museum, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+            (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+            (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(
+            searchManager.getSearchableInfo(getComponentName()));
+
         return true;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        MuseumAdapter adapter = (MuseumAdapter) parent.getAdapter();
+        Museum museum = (Museum) adapter.getItem(position);
+
+        Intent intent = new Intent(this, DetailActivity.class);
+        Bundle b = new Bundle();
+        b.putSerializable("museum", museum);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     @Override
