@@ -130,7 +130,6 @@ public class MuseumActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
-            onSearchRequested();
             return true;
         }
 

@@ -2,6 +2,7 @@ package edu.muenchnermuseen.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,6 +29,8 @@ import edu.muenchnermuseen.entities.Museum;
 public class DetailActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener {
 
+  private Museum museum;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -49,7 +52,7 @@ public class DetailActivity extends AppCompatActivity
     gotoButton.setOnClickListener(this);
 
     Bundle b = getIntent().getExtras();
-    Museum museum = null;
+
     if(b != null) {
       museum = (Museum) b.getSerializable("museum");
     }
@@ -99,7 +102,11 @@ public class DetailActivity extends AppCompatActivity
 
   @Override
   public void onClick(View v) {
-
+    Intent intent = new Intent(this, MapsActivity.class);
+    Bundle b = new Bundle();
+    b.putSerializable("museum", museum);
+    intent.putExtras(b);
+    startActivity(intent);
   }
 
   @Override
@@ -111,7 +118,6 @@ public class DetailActivity extends AppCompatActivity
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_search) {
-      onSearchRequested();
       return true;
     }
 
