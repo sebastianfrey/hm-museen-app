@@ -3,9 +3,12 @@ package edu.muenchnermuseen.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -23,13 +26,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import edu.muenchnermuseen.R;
+import edu.muenchnermuseen.db.DataBaseHelper;
+import edu.muenchnermuseen.db.dao.CategoryDAO;
+import edu.muenchnermuseen.db.dao.MuseumDAO;
 import edu.muenchnermuseen.entities.Category;
 import edu.muenchnermuseen.entities.Museum;
 
 public class DetailActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener {
+    implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnClickListener,
+        SearchView.OnSuggestionListener {
+
+  DataBaseHelper db;
+
+  MuseumDAO museumDAO;
 
   private Museum museum;
+
+  SearchView searchView;
+  MenuItem searchMenuItem;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +51,9 @@ public class DetailActivity extends AppCompatActivity
     setContentView(R.layout.activity_detail);
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
+
+    db = new DataBaseHelper(this);
+    museumDAO = new MuseumDAO(db);
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -72,6 +89,14 @@ public class DetailActivity extends AppCompatActivity
     }
   }
 
+
+  @Override
+  public void setIntent(Intent newIntent)
+  {
+    super.setIntent(newIntent);
+  }
+
+
   @Override
   public void onBackPressed() {
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -90,11 +115,11 @@ public class DetailActivity extends AppCompatActivity
 
     // Associate searchable configuration with the SearchView
     SearchManager searchManager =
-        (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-    SearchView searchView =
-        (SearchView) menu.findItem(R.id.action_search).getActionView();
-    searchView.setSearchableInfo(
-        searchManager.getSearchableInfo(getComponentName()));
+            (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    searchView = (SearchView) searchMenuItem.getActionView();
+    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+    searchView.setOnSuggestionListener(this);
 
     return true;
   }
@@ -122,6 +147,36 @@ public class DetailActivity extends AppCompatActivity
     }
 
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public boolean onSuggestionSelect(int position)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean onSuggestionClick(int position) {
+    CursorAdapter c = searchView.getSuggestionsAdapter();
+
+    Cursor cur = c.getCursor();
+    cur.moveToPosition(position);
+    int id = cur.getInt(cur.getColumnIndex(BaseColumns._ID));
+
+    Museum museum = museumDAO.getMuseumById(id);
+
+    if (museum != null)
+    {
+      searchMenuItem.collapseActionView();
+      searchView.clearFocus();
+      Intent intent = new Intent(this, DetailActivity.class);
+      Bundle b = new Bundle();
+      b.putSerializable("museum", museum);
+      intent.putExtras(b);
+      startActivity(intent);
+    }
+
+    return true;
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
