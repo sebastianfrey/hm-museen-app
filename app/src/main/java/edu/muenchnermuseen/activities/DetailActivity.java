@@ -39,6 +39,7 @@ public class DetailActivity extends AppCompatActivity
   DataBaseHelper db;
 
   MuseumDAO museumDAO;
+  CategoryDAO categoryDAO;
 
   private Museum museum;
 
@@ -54,6 +55,7 @@ public class DetailActivity extends AppCompatActivity
 
     db = new DataBaseHelper(this);
     museumDAO = new MuseumDAO(db);
+    categoryDAO = new CategoryDAO(db);
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -62,6 +64,7 @@ public class DetailActivity extends AppCompatActivity
     toggle.syncState();
 
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+    navigationView.setItemIconTintList(null);
     navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -182,21 +185,41 @@ public class DetailActivity extends AppCompatActivity
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
-    // Handle navigation view item clicks here.
     int id = item.getItemId();
+    int categoryId = -1;
 
-    if (id == R.id.nav_camera) {
-      // Handle the camera action
-    } else if (id == R.id.nav_gallery) {
+    switch (id)
+    {
+      case R.id.nav_home:
+        startActivity(new Intent(this, MainActivity.class));
+        break;
 
-    } else if (id == R.id.nav_slideshow) {
+      case R.id.nav_category_technology:
+        categoryId = 0;
+        break;
 
-    } else if (id == R.id.nav_manage) {
+      case R.id.nav_category_history:
+        categoryId = 1;
+        break;
 
-    } else if (id == R.id.nav_share) {
+      case R.id.nav_category_nature:
+        categoryId = 2;
+        break;
 
-    } else if (id == R.id.nav_send) {
+      case R.id.nav_category_art:
+        categoryId = 3;
+        break;
 
+    }
+
+    if (categoryId > -1)
+    {
+      Category category = categoryDAO.getCategory(categoryId);
+      Intent intent = new Intent(this, MuseumActivity.class);
+      Bundle b = new Bundle();
+      b.putSerializable("category", category);
+      intent.putExtras(b);
+      startActivity(intent);
     }
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

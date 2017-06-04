@@ -14,4 +14,16 @@
     <string name="label_goto">Zur Karte</string>
 
     <string name="action_settings">Einstellungen</string>
+
+
+<!--
+    <string name="nav_category_technology">Technik</string>
+-->
+    <string name="nav_home">Home</string>
+    <string name="nav_overview">Übersicht</string>
+    <string name="nav_categories">Kategorien</string>
+    <string name="nav_category_technology">Technik</string>
+    <string name="nav_category_history">Geschichte</string>
+    <string name="nav_category_art">Kunst</string>
+    <string name="nav_category_nature">Natur</string>
 </resources>

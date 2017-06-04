@@ -44,6 +44,7 @@ public class MuseumActivity extends AppCompatActivity
 
     SearchView searchView;
     MenuItem searchMenuItem;
+    ListView museumView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class MuseumActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -83,7 +85,7 @@ public class MuseumActivity extends AppCompatActivity
             museums = museumDAO.getMuseums();
         }
 
-        ListView museumView = (ListView) findViewById(R.id.museum_list);
+        museumView = (ListView) findViewById(R.id.museum_list);
         MuseumAdapter museumAdapter = new MuseumAdapter(this, museums);
         museumView.setAdapter(museumAdapter);
         museumView.setOnItemClickListener(this);
@@ -177,19 +179,37 @@ public class MuseumActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        int categoryId = -1;
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        switch (id)
+        {
+            case R.id.nav_home:
+                startActivity(new Intent(this, MainActivity.class));
+                break;
 
-        } else if (id == R.id.nav_slideshow) {
+            case R.id.nav_category_technology:
+                categoryId = 0;
+                break;
 
-        } else if (id == R.id.nav_manage) {
+            case R.id.nav_category_history:
+                categoryId = 1;
+                break;
 
-        } else if (id == R.id.nav_share) {
+            case R.id.nav_category_nature:
+                categoryId = 2;
+                break;
 
-        } else if (id == R.id.nav_send) {
+            case R.id.nav_category_art:
+                categoryId = 3;
+                break;
 
+        }
+
+        if (categoryId > -1)
+        {
+            List<Museum> museums = museumDAO.getMuseumsByCategory(categoryId);
+            MuseumAdapter museumAdapter = new MuseumAdapter(this, museums);
+            museumView.setAdapter(museumAdapter);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

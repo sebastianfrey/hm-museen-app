@@ -44,7 +44,7 @@
             android:id="@+id/detail_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/header_text"
+            android:textSize="@dimen/header_text_size"
             android:textStyle="bold"
             android:padding="@dimen/inner_spacing"></TextView>
         <com.codesgood.views.JustifiedTextView

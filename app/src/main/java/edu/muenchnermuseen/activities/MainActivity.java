@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
 
         GridView categoryView = (GridView) findViewById(R.id.category_grid);
@@ -174,22 +175,37 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
+        int categoryId = -1;
 
-        if (id == R.id.nav_camera) {
-            Intent intent = new Intent(this, MapsActivity.class);
+        switch (id)
+        {
+            case R.id.nav_category_technology:
+                categoryId = 0;
+                break;
+
+            case R.id.nav_category_history:
+                categoryId = 1;
+                break;
+
+            case R.id.nav_category_nature:
+                categoryId = 2;
+                break;
+
+            case R.id.nav_category_art:
+                categoryId = 3;
+                break;
+
+        }
+
+        if (categoryId > -1)
+        {
+            Category category = categoryDAO.getCategory(categoryId);
+            Intent intent = new Intent(this, MuseumActivity.class);
+            Bundle b = new Bundle();
+            b.putSerializable("category", category);
+            intent.putExtras(b);
             startActivity(intent);
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

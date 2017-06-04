@@ -25,7 +25,7 @@
 
     <style name="mySearchResult" parent="TextAppearance.AppCompat.SearchResult.Title">
         <item name="android:textColor">#FF44535A</item>
-        <item name="android:textSize">@dimen/header_text</item>
+        <item name="android:textSize">@dimen/header_text_size</item>
     </style>
 
 </resources>
