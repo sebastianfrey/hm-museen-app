@@ -177,16 +177,12 @@ public class MuseumActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        Intent intent = null;
         int id = item.getItemId();
         int categoryId = -1;
 
         switch (id)
         {
-            case R.id.nav_home:
-                startActivity(new Intent(this, MainActivity.class));
-                break;
-
             case R.id.nav_category_technology:
                 categoryId = 0;
                 break;
@@ -203,13 +199,26 @@ public class MuseumActivity extends AppCompatActivity
                 categoryId = 3;
                 break;
 
+            case R.id.nav_map:
+                intent = new Intent(this, MapsActivity.class);
+                break;
+
+            case R.id.nav_home:
+                intent = new Intent(this, MainActivity.class);
+                break;
         }
+
 
         if (categoryId > -1)
         {
             List<Museum> museums = museumDAO.getMuseumsByCategory(categoryId);
             MuseumAdapter museumAdapter = new MuseumAdapter(this, museums);
             museumView.setAdapter(museumAdapter);
+        }
+
+        if (intent != null)
+        {
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

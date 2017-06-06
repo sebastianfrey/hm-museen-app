@@ -13,15 +13,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -37,9 +34,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
@@ -183,6 +182,7 @@ public class MapsActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Intent intent = null;
         int id = item.getItemId();
         int categoryId = -1;
 
@@ -204,15 +204,29 @@ public class MapsActivity extends AppCompatActivity
                 categoryId = 3;
                 break;
 
+            case R.id.nav_map:
+                if (museum != null)
+                {
+                    intent = new Intent(this, MapsActivity.class);
+                }
+                break;
+
+            case R.id.nav_home:
+                intent = new Intent(this, MainActivity.class);
+                break;
         }
 
         if (categoryId > -1)
         {
             Category category = categoryDAO.getCategory(categoryId);
-            Intent intent = new Intent(this, MuseumActivity.class);
+            intent = new Intent(this, MuseumActivity.class);
             Bundle b = new Bundle();
             b.putSerializable("category", category);
             intent.putExtras(b);
+        }
+
+        if (intent != null)
+        {
             startActivity(intent);
         }
 
@@ -234,6 +248,28 @@ public class MapsActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMyLocationEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
+        // no museum was delivered from parent activity, so show all museums on the map.
+        if (museum == null)
+        {
+            showAllMuseums();
+            return;
+        }
+        else
+        {
+            LatLng position = new LatLng(museum.getLatitude(), museum.getLongitude());
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(getMuseumIcon(museum));
+            String title = museum.getName();
+
+            map.addMarker(
+                    new MarkerOptions()
+                            .position(position)
+                            .icon(icon)
+                            .title(title)
+            );
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 17));
+
+        }
 
         if (checkLocationPermission())
         {
@@ -323,14 +359,14 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    private void doDirection(Location location)
+    private void doDirection(Location location, Museum museum)
     {
         if (museum == null || location == null) return;
 
         DirectionsResult result = null;
 
         String origin = MessageFormat.format("{0},{1}", location.getLatitude(), location.getLongitude());
-        String destination = MessageFormat.format("{0},{1}", museum.getLat(), museum.getLon());
+        String destination = MessageFormat.format("{0},{1}", museum.getLatitude(), museum.getLongitude());
 
         try {
             result = DirectionsApi.newRequest(context)
@@ -366,35 +402,6 @@ public class MapsActivity extends AppCompatActivity
                             .addAll(polyline)
             );
 
-            int resId;
-            switch (museum.getCategory().getId())
-            {
-                case 0:
-                    resId = R.mipmap.mp_category_technology;
-                    break;
-
-                case 1:
-                    resId = R.mipmap.mp_category_history;
-                    break;
-
-                case 2:
-                    resId = R.mipmap.mp_category_nature;
-                    break;
-
-                case 3:
-                    resId = R.mipmap.mp_category_art;
-                    break;
-
-                default:
-                    resId = R.mipmap.ic_img_not_found;
-            }
-
-            map.addMarker(
-                    new MarkerOptions()
-                            .position(polyline.get(polyline.size() - 1))
-                            .icon(BitmapDescriptorFactory.fromResource(resId))
-            );
-
             map.moveCamera(getCameraUpdate(route));
         }
     }
@@ -412,7 +419,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        doDirection(location);
+        doDirection(location, museum);
     }
 
     @Override
@@ -428,5 +435,75 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    private void showAllMuseums()
+    {
+        List<Museum> museums = museumDAO.getMuseums();
+
+        if (museums != null && !museums.isEmpty())
+        {
+            // create instance of bounds builder, to zoom later all museums into view.
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+            // iterate over all museums
+            for (Museum museum : museums)
+            {
+                // create position, icon and title for pin.
+                LatLng position = new LatLng(museum.getLatitude(), museum.getLongitude());
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(getMuseumIcon(museum));
+                String title = museum.getName();
+
+                // add pin to map.
+                map.addMarker(
+                        new MarkerOptions()
+                                .position(position)
+                                .icon(icon)
+                                .title(title)
+                );
+
+                // extend bounds builder.
+                builder.include(position);
+            }
+
+            // build bounds.
+            LatLngBounds bounds = builder.build();
+
+            Log.d("MapsActivity", "xmin: "+ bounds.southwest.latitude);
+            Log.d("MapsActivity", "ymin: "+ bounds.southwest.longitude);
+            Log.d("MapsActivity", "xmax: "+ bounds.northeast.latitude);
+            Log.d("MapsActivity", "ymin: "+ bounds.northeast.longitude);
+
+            // zoom zo museums.
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));;
+        }
+    }
+
+    private int getMuseumIcon(Museum museum)
+    {
+        int resId;
+        switch (museum.getCategory().getId())
+        {
+            case 0:
+                resId = R.mipmap.mp_category_technology;
+                break;
+
+            case 1:
+                resId = R.mipmap.mp_category_history;
+                break;
+
+            case 2:
+                resId = R.mipmap.mp_category_nature;
+                break;
+
+            case 3:
+                resId = R.mipmap.mp_category_art;
+                break;
+
+            default:
+                resId = R.mipmap.ic_img_not_found;
+        }
+
+        return resId;
     }
 }

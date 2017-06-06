@@ -40,19 +40,19 @@ public class Museum implements Serializable {
         this.description = description;
     }
 
-    public Double getLat() {
+    public Double getLatitude() {
         return lat;
     }
 
-    public void setLat(Double lat) {
+    public void setLatitude(Double lat) {
         this.lat = lat;
     }
 
-    public Double getLon() {
+    public Double getLongitude() {
         return lon;
     }
 
-    public void setLon(Double lon) {
+    public void setLongitude(Double lon) {
         this.lon = lon;
     }
 

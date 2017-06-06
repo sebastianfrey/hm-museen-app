@@ -166,11 +166,11 @@ public class MuseumDAO {
                     break;
 
                 case LAT_COLUMN:
-                    museum.setLat(cursor.getDouble(idx));
+                    museum.setLatitude(cursor.getDouble(idx));
                     break;
 
                 case LON_COLUMN:
-                    museum.setLon(cursor.getDouble(idx));
+                    museum.setLongitude(cursor.getDouble(idx));
                     break;
 
                 case CATEGORY_COLUMN:

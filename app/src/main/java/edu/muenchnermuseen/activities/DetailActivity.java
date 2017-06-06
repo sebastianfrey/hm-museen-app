@@ -182,15 +182,12 @@ public class DetailActivity extends AppCompatActivity
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
+    Intent intent = null;
     int id = item.getItemId();
     int categoryId = -1;
 
     switch (id)
     {
-      case R.id.nav_home:
-        startActivity(new Intent(this, MainActivity.class));
-        break;
-
       case R.id.nav_category_technology:
         categoryId = 0;
         break;
@@ -207,15 +204,26 @@ public class DetailActivity extends AppCompatActivity
         categoryId = 3;
         break;
 
+      case R.id.nav_map:
+        intent = new Intent(this, MapsActivity.class);
+        break;
+
+      case R.id.nav_home:
+        intent = new Intent(this, MainActivity.class);
+        break;
     }
 
     if (categoryId > -1)
     {
       Category category = categoryDAO.getCategory(categoryId);
-      Intent intent = new Intent(this, MuseumActivity.class);
+      intent = new Intent(this, MuseumActivity.class);
       Bundle b = new Bundle();
       b.putSerializable("category", category);
       intent.putExtras(b);
+    }
+
+    if (intent != null)
+    {
       startActivity(intent);
     }
 

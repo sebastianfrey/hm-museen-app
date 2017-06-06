@@ -3,10 +3,7 @@ package edu.muenchnermuseen.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
@@ -19,7 +16,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -119,7 +115,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public void onDestroy()
     {
@@ -128,6 +123,25 @@ public class MainActivity extends AppCompatActivity
         if (handler != null && autoSlider != null)
         {
             handler.removeCallbacks(autoSlider);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (handler != null && autoSlider != null)
+        {
+            handler.removeCallbacks(autoSlider);
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (handler != null && autoSlider != null)
+        {
+            handler.postDelayed(autoSlider, SLIDE_DELAY);
         }
     }
 
@@ -223,6 +237,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Intent intent = null;
         int id = item.getItemId();
         int categoryId = -1;
 
@@ -244,15 +259,22 @@ public class MainActivity extends AppCompatActivity
                 categoryId = 3;
                 break;
 
+            case R.id.nav_map:
+                intent = new Intent(this, MapsActivity.class);
+                break;
         }
 
         if (categoryId > -1)
         {
             Category category = categoryDAO.getCategory(categoryId);
-            Intent intent = new Intent(this, MuseumActivity.class);
+            intent = new Intent(this, MuseumActivity.class);
             Bundle b = new Bundle();
             b.putSerializable("category", category);
             intent.putExtras(b);
+        }
+
+        if (intent != null)
+        {
             startActivity(intent);
         }
 
