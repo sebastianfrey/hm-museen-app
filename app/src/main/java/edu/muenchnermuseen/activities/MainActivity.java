@@ -77,6 +77,34 @@ public class MainActivity extends AppCompatActivity
         pager = (ViewPager) findViewById(R.id.pager);
         ScreenSlidePagerAdapter adapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), museumDAO.getMuseums());
         pager.setAdapter(adapter);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (handler != null && autoSlider != null)
+                {
+                    handler.removeCallbacks(autoSlider);
+                    handler.postDelayed(autoSlider, SLIDE_DELAY);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (handler != null && autoSlider != null)
+                {
+                    handler.removeCallbacks(autoSlider);
+                    handler.postDelayed(autoSlider, SLIDE_DELAY);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (handler != null && autoSlider != null)
+                {
+                    handler.removeCallbacks(autoSlider);
+                    handler.postDelayed(autoSlider, SLIDE_DELAY);
+                }
+            }
+        });
 
         handler = new Handler();
         autoSlider = new Runnable() {
@@ -314,4 +342,6 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+
 }
