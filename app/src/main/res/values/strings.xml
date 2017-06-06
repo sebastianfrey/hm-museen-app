@@ -15,8 +15,8 @@
 
     <string name="action_settings">Einstellungen</string>
 
-
-<!--
+    <string name="google_directions_api_key">AIzaSyBJFp8TrR1JYC9wW3hRykD1zAXCk2QzyGg</string>
+    <!--
     <string name="nav_category_technology">Technik</string>
 -->
     <string name="nav_home">Home</string>

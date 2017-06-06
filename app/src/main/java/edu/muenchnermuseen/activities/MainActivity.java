@@ -8,9 +8,11 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,6 +32,7 @@ import java.util.List;
 
 import edu.muenchnermuseen.R;
 import edu.muenchnermuseen.adapter.CategoryAdapter;
+import edu.muenchnermuseen.adapter.ScreenSlidePagerAdapter;
 import edu.muenchnermuseen.db.DataBaseHelper;
 import edu.muenchnermuseen.db.dao.CategoryDAO;
 import edu.muenchnermuseen.db.dao.MuseumDAO;
@@ -38,15 +41,21 @@ import edu.muenchnermuseen.entities.Museum;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener,
-                    SearchView.OnSuggestionListener {
+                    SearchView.OnSuggestionListener, AdapterView.OnClickListener {
+
+    private static int SLIDE_DELAY = 4 * 1000;
 
     DataBaseHelper db;
 
     CategoryDAO categoryDAO;
     MuseumDAO museumDAO;
 
+    ViewPager pager;
     SearchView searchView;
     MenuItem searchMenuItem;
+
+    Handler handler;
+    Runnable autoSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +78,32 @@ public class MainActivity extends AppCompatActivity
         navigationView.setItemIconTintList(null);
         navigationView.setNavigationItemSelectedListener(this);
 
+        pager = (ViewPager) findViewById(R.id.pager);
+        ScreenSlidePagerAdapter adapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), museumDAO.getMuseums());
+        pager.setAdapter(adapter);
+
+        handler = new Handler();
+        autoSlider = new Runnable() {
+
+            @Override
+            public void run() {
+                int total = pager.getAdapter().getCount();
+                int current = pager.getCurrentItem();
+
+                int position = 0;
+
+                if (current < total - 1)
+                {
+                    position = pager.getCurrentItem() + 1;
+                }
+
+                pager.setCurrentItem(position, true);
+
+                handler.postDelayed(this, SLIDE_DELAY);
+            }
+        };
+        handler.postDelayed(autoSlider, SLIDE_DELAY);
+
         GridView categoryView = (GridView) findViewById(R.id.category_grid);
         List<Category> categories = categoryDAO.getCategories();
         Collections.sort(categories, new Comparator<Category>() {
@@ -81,6 +116,19 @@ public class MainActivity extends AppCompatActivity
         categoryView.setAdapter(categoryAdapter);
 
         categoryView.setOnItemClickListener(this);
+    }
+
+
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        if (handler != null && autoSlider != null)
+        {
+            handler.removeCallbacks(autoSlider);
+        }
     }
 
     @Override
@@ -211,5 +259,37 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+
+        int total = pager.getAdapter().getCount();
+        int current = pager.getCurrentItem();
+        switch (id)
+        {
+            case R.id.slide_left:
+
+                if (current > 0)
+                {
+                    handler.removeCallbacks(autoSlider);
+                    handler.postDelayed(autoSlider, SLIDE_DELAY);
+                    pager.setCurrentItem(pager.getCurrentItem() - 1, true);
+                }
+
+                break;
+
+            case R.id.slide_right:
+
+                if (current < total)
+                {
+                    handler.removeCallbacks(autoSlider);
+                    handler.postDelayed(autoSlider, SLIDE_DELAY);
+                    pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+                }
+
+                break;
+        }
     }
 }

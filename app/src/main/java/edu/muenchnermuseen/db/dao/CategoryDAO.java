@@ -19,10 +19,12 @@ public class CategoryDAO {
 
   public final static String ID_COLUMN = "ID";
   public final static String NAME_COLUMN = "NAME";
+  public final static String ICON_RES_COLUMN = "ICON_RES";
 
   private static String[] CATEGORIES_COLUMNS = new String[]{
       ID_COLUMN,
-      NAME_COLUMN
+      NAME_COLUMN,
+      ICON_RES_COLUMN
   };
 
   private DataBaseHelper db;
@@ -114,6 +116,10 @@ public class CategoryDAO {
 
         case NAME_COLUMN:
           category.setName(cursor.getString(idx));
+          break;
+
+        case ICON_RES_COLUMN:
+          category.setIconResource(cursor.getString(idx));
           break;
       }
     }

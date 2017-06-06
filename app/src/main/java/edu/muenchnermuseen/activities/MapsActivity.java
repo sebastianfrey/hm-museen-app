@@ -1,19 +1,36 @@
 package edu.muenchnermuseen.activities;
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.provider.BaseColumns;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import edu.muenchnermuseen.R;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,7 +43,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
-import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
@@ -36,28 +52,53 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.muenchnermuseen.R;
+import edu.muenchnermuseen.db.DataBaseHelper;
+import edu.muenchnermuseen.db.dao.CategoryDAO;
+import edu.muenchnermuseen.db.dao.MuseumDAO;
+import edu.muenchnermuseen.entities.Category;
 import edu.muenchnermuseen.entities.Museum;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+public class MapsActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
+        LocationListener, SearchView.OnSuggestionListener {
 
     private final static int LOCATION_PERMISSION = 1;
 
-    private Location location;
     private GoogleMap map;
     private GeoApiContext context;
     private Museum museum;
+    SearchView searchView;
+    MenuItem searchMenuItem;
+    DataBaseHelper db;
+    MuseumDAO museumDAO;
+    CategoryDAO categoryDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        db = new DataBaseHelper(this);
+        categoryDAO = new CategoryDAO(db);
+        museumDAO = new MuseumDAO(db);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        String key = getResources().getString(R.string.google_maps_key);
-        context = new GeoApiContext().setApiKey("AIzaSyBJFp8TrR1JYC9wW3hRykD1zAXCk2QzyGg");
+        String key = getResources().getString(R.string.google_directions_api_key);
+        context = new GeoApiContext().setApiKey(key);
 
         Bundle b = getIntent().getExtras();
         if(b != null) {
@@ -65,6 +106,120 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchMenuItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) searchMenuItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnSuggestionListener(this);
+
+        return true;
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+        CursorAdapter c = searchView.getSuggestionsAdapter();
+
+        Cursor cur = c.getCursor();
+        cur.moveToPosition(position);
+        int id = cur.getInt(cur.getColumnIndex(BaseColumns._ID));
+
+        Museum museum = museumDAO.getMuseumById(id);
+
+        if (museum != null)
+        {
+            searchMenuItem.collapseActionView();
+            searchView.clearFocus();
+            Intent intent = new Intent(this, DetailActivity.class);
+            Bundle b = new Bundle();
+            b.putSerializable("museum", museum);
+            intent.putExtras(b);
+            startActivity(intent);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+/*
+        return false;
+*/
+//         Handle action bar item clicks here. The action bar will
+//         automatically handle clicks on the Home/Up button, so long
+//         as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_search) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        int categoryId = -1;
+
+        switch (id)
+        {
+            case R.id.nav_category_technology:
+                categoryId = 0;
+                break;
+
+            case R.id.nav_category_history:
+                categoryId = 1;
+                break;
+
+            case R.id.nav_category_nature:
+                categoryId = 2;
+                break;
+
+            case R.id.nav_category_art:
+                categoryId = 3;
+                break;
+
+        }
+
+        if (categoryId > -1)
+        {
+            Category category = categoryDAO.getCategory(categoryId);
+            Intent intent = new Intent(this, MuseumActivity.class);
+            Bundle b = new Bundle();
+            b.putSerializable("category", category);
+            intent.putExtras(b);
+            startActivity(intent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
     /**
      * Manipulates the map once available.
@@ -210,9 +365,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new PolylineOptions()
                             .addAll(polyline)
             );
+
+            int resId;
+            switch (museum.getCategory().getId())
+            {
+                case 0:
+                    resId = R.mipmap.mp_category_technology;
+                    break;
+
+                case 1:
+                    resId = R.mipmap.mp_category_history;
+                    break;
+
+                case 2:
+                    resId = R.mipmap.mp_category_nature;
+                    break;
+
+                case 3:
+                    resId = R.mipmap.mp_category_art;
+                    break;
+
+                default:
+                    resId = R.mipmap.ic_img_not_found;
+            }
+
             map.addMarker(
                     new MarkerOptions()
                             .position(polyline.get(polyline.size() - 1))
+                            .icon(BitmapDescriptorFactory.fromResource(resId))
             );
 
             map.moveCamera(getCameraUpdate(route));

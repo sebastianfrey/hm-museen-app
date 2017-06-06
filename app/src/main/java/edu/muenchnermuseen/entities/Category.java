@@ -10,6 +10,7 @@ public class Category implements Serializable {
 
     private Integer id = -1;
     private String name = "undefined";
+    private String iconRes = "android.resource://edu.muenchnermuseen/mipmap/ic_img_not_found";
 
     public Integer getId() {
         return id;
@@ -26,4 +27,8 @@ public class Category implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getIconResource() { return iconRes; }
+
+    public void setIconResource(String name) { this.iconRes = iconRes; };
 }
