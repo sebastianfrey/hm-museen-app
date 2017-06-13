@@ -247,7 +247,6 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setMyLocationEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         // no museum was delivered from parent activity, so show all museums on the map.
         if (museum == null)
@@ -276,6 +275,7 @@ public class MapsActivity extends AppCompatActivity
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission. ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
+                map.setMyLocationEnabled(true);
                 initLocationListener();
             }
         }
@@ -331,6 +331,7 @@ public class MapsActivity extends AppCompatActivity
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     initLocationListener();
+                    map.setMyLocationEnabled(true);
 
                 } else {
 
@@ -439,6 +440,11 @@ public class MapsActivity extends AppCompatActivity
 
     private void showAllMuseums()
     {
+        if(checkLocationPermission())
+        {
+            map.setMyLocationEnabled(true);
+        }
+
         List<Museum> museums = museumDAO.getMuseums();
 
         if (museums != null && !museums.isEmpty())
